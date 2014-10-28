@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project ZenLife">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/Users/jason/workspace/ZenLife/build/zenlife.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="zenlife.ZenlifeServer"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/Users/jason/workspace/ZenLife/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/ZenLife/lib/simple-5.1.5.jar"/>
+            <fileset dir="/Users/jason/workspace/JasonLib/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/JasonLib/lib/miglayout-4.0-swing.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/JasonLib/lib/gson-2.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/JasonLib/lib/guava-18.0.jar"/>
+        </jar>
+    </target>
+</project>
