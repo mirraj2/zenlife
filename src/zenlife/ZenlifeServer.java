@@ -21,6 +21,8 @@ public class ZenlifeServer implements Container {
 
   private static final boolean PRODUCTION = false;
 
+  private final EnrollController enrollController = new EnrollController();
+
   @Override
   public void handle(Request req, Response resp) {
     String s = req.getPath().toString();
@@ -47,6 +49,11 @@ public class ZenlifeServer implements Container {
 
   private void serve(String s, Response resp, Map<String, String> variables) {
     try {
+      if (s.contains("*") || s.contains("..") || s.contains("$")) {
+        Log.warn("weird request: " + s);
+        throw new RuntimeException("Bad request: " + s);
+      }
+
       if (s.startsWith("/")) {
         s = s.substring(1);
       }
