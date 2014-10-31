@@ -1,3 +1,7 @@
+body{
+	margin-bottom: 50px;
+}
+
 .header {
 	height: 60px;
 	background-color: white;
@@ -65,4 +69,16 @@ li {
 #next-button {
 	margin-top: 20px;
 	margin-left: 13px;
+}
+
+.table {
+	width: 300px;
+}
+
+.table-hover tbody tr:hover > td {
+  cursor: pointer
+}
+
+tr .highlight{
+	background-color: red;
 }

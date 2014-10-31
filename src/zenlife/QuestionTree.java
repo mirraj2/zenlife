@@ -6,11 +6,13 @@ import jasonlib.IO;
 import jasonlib.Json;
 import jasonlib.Log;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -208,25 +210,30 @@ public class QuestionTree {
 
     String[] row = reader.readNext();
     outer: while (row != null) {
-      Question question = new Question(row[0], row[2]);
-      ret.add(question);
+      try {
+        Question question = new Question(row[0], row[2]);
+        ret.add(question);
 
-      while (true) {
+        while (true) {
+          row = reader.readNext();
+          if (row == null) {
+            break outer;
+          }
+          if (row[0].trim().isEmpty()) {
+            break;
+          }
+          String answer = row[0];
+          String link = row[1];
+
+          question.choices.add(answer);
+          question.links.add(link);
+        }
+
         row = reader.readNext();
-        if (row == null) {
-          break outer;
-        }
-        if (row[0].trim().isEmpty()) {
-          break;
-        }
-        String answer = row[0];
-        String link = row[1];
-
-        question.choices.add(answer);
-        question.links.add(link);
+      } catch (Exception e) {
+        Log.error("Problem with row: " + Arrays.toString(row));
+        throw Throwables.propagate(e);
       }
-
-      row = reader.readNext();
     }
 
     reader.close();

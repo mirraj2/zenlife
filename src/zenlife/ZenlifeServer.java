@@ -33,6 +33,11 @@ public class ZenlifeServer implements Container {
         s += "index";
       }
 
+      if (s.startsWith("/getRates")) {
+        enrollController.handle(req, resp);
+        return;
+      }
+
       if (!s.contains(".")) {
         s += ".html";
       }
