@@ -1,5 +1,6 @@
 package zenlife;
 
+import jasonlib.Config;
 import jasonlib.IO;
 import jasonlib.Log;
 import java.io.IOException;
@@ -19,8 +20,6 @@ import com.google.common.collect.ImmutableMap;
 
 public class ZenlifeServer implements Container {
 
-  private static final boolean PRODUCTION = false;
-
   private final EnrollController enrollController = new EnrollController();
 
   @Override
@@ -34,7 +33,10 @@ public class ZenlifeServer implements Container {
       }
 
       if (s.startsWith("/getRates")) {
-        enrollController.handle(req, resp);
+        enrollController.getRates(req, resp);
+        return;
+      } else if (s.startsWith("/getFinalRates")) {
+        enrollController.getFinalRates(req, resp);
         return;
       }
 
@@ -91,10 +93,12 @@ public class ZenlifeServer implements Container {
 
   @SuppressWarnings("resource")
   public static void main(String[] args) throws Exception {
+    int port = Config.load("zenlife").getInt("port", 80);
+    
     Server server = new ContainerServer(new ZenlifeServer());
     Connection connection = new SocketConnection(server);
-    connection.connect(new InetSocketAddress(PRODUCTION ? 80 : 8080));
-    Log.debug("Server started!");
+    connection.connect(new InetSocketAddress(port));
+    Log.debug("Server started on port " + port);
   }
 
 }
