@@ -8,7 +8,9 @@
                 <attribute name="Main-Class" value="zenlife.editor.QuestionEditor"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="/Users/jason/workspace/ZenLife/bin"/>
+            <fileset dir="/Users/jason/workspace/ZenLife/bin">
+            	<include name="**/*.class"/>
+            </fileset>
             <fileset dir="/Users/jason/workspace/JasonLib/bin"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/JasonLib/lib/miglayout-4.0-swing.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/JasonLib/lib/gson-2.3.jar"/>
