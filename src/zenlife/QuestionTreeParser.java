@@ -5,6 +5,7 @@ import static java.lang.Integer.parseInt;
 import jasonlib.IO;
 import jasonlib.Json;
 import jasonlib.Log;
+import jasonlib.swing.global.GUtils;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
@@ -40,40 +41,41 @@ public class QuestionTreeParser {
       }
     }
 
-    printTree(rootQuestions);
-    // convertToJson(rootQuestions);
+    // printTree(rootQuestions);
+    convertToJson(rootQuestions);
   }
 
   public void convertToJson(List<Question> rootQuestions) {
-    Json json = Json.object();
+    Json sections = Json.array();
 
+    Json section = Json.object().with("title", "Section 1");
     Json questionsArray = Json.array();
-
     for (Question question : rootQuestions) {
       questionsArray.add(toJson(question));
     }
+    section.with("questions", questionsArray);
 
-    json.with("questions", questionsArray);
+    sections.add(section);
 
-    Log.debug(json);
+    Log.debug(sections);
   }
 
   private Json toJson(Question q) {
     Json ret = Json.object();
     ret.with("id", q.id);
     ret.with("text", q.text);
-    ret.with("type", q.multi ? "multi" : "single");
+    ret.with("type", q.multi ? "multi-choice" : "single-choice");
 
     Json choices = Json.array();
 
     for (int i = 0; i < q.choices.size(); i++) {
       Json choice = Json.object();
 
-      choice.with("text", q.choices.get(i));
+      choice.with("text", GUtils.capitalize(q.choices.get(i)));
 
       String link = q.links.get(i);
       if (!link.isEmpty()) {
-        choice.with("links", parseLinks(link));
+        choice.with("questions", parseLinks(link));
       }
 
       choices.add(choice);
@@ -94,25 +96,21 @@ public class QuestionTreeParser {
 
     try {
       int singleQuestion = parseInt(link);
-      Json obj = Json.object();
-      obj.with("question", toJson(idQuestionMap.get(singleQuestion)));
-      ret.add(obj);
+      ret.add(toJson(idQuestionMap.get(singleQuestion)));
       return ret;
     } catch (Exception e) {
     }
 
     try {
       for (String s : Splitter.on(',').trimResults().split(link)) {
-        Json obj = Json.object();
         if (s.contains("=")) {
           boolean male = s.startsWith("m");
           int questionId = parseInt(s.substring(s.indexOf('=') + 1));
-          obj.with("question", toJson(idQuestionMap.get(questionId)));
-          obj.with("condition", Json.object().with("sex", male ? "male" : "female"));
+          ret.add(toJson(idQuestionMap.get(questionId)));
+          // obj.with("condition", Json.object().with("sex", male ? "male" : "female"));
         } else {
-          obj.with("question", toJson(idQuestionMap.get(parseInt(s))));
+          ret.add(toJson(idQuestionMap.get(parseInt(s))));
         }
-        ret.add(obj);
       }
       return ret;
     } catch (Exception e) {

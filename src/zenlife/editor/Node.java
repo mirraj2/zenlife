@@ -2,12 +2,13 @@ package zenlife.editor;
 
 import static com.google.common.base.Preconditions.checkState;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.tree.TreeNode;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
-public class Node implements TreeNode {
+public class Node implements TreeNode, Iterable<Node> {
 
   private Object value;
   private Node parent;
@@ -106,6 +107,11 @@ public class Node implements TreeNode {
       return 0;
     }
     return 1 + parent.getDepth();
+  }
+
+  @Override
+  public Iterator<Node> iterator() {
+    return children.iterator();
   }
 
 }

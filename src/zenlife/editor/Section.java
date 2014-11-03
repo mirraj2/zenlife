@@ -105,36 +105,27 @@ public class Section extends JComponent {
   private Node constructTree(Json json) {
     Node ret = new Node(json.get("title"));
 
-    for (Json question : json.getJson("questions").asJsonArray()) {
-      Node node = new Node(question);
-      Json choices = question.getJson("choices");
-      question.remove("choices");
-      for (Json choice : choices.asJsonArray()) {
-        Node choiceNode = new Node(choice);
-        recurse(choice, choiceNode);
-        node.add(choiceNode);
-      }
-      ret.add(node);
-    }
+    recurse(json, ret);
 
     return ret;
   }
 
   private void recurse(Json json, Node node) {
-    if (json.has("links")) {
-      for (Json link : json.getJson("links").asJsonArray()) {
-        Json question = link.getJson("question");
+    if (json.has("questions")) {
+      for (Json question : json.getJson("questions").asJsonArray()) {
         Node questionNode = new Node(question);
-        for (Json choice : question.getJson("choices").asJsonArray()) {
-          Node choiceNode = new Node(choice);
-          recurse(choice, choiceNode);
-          questionNode.add(choiceNode);
+        if (question.has("choices")) {
+          for (Json choice : question.getJson("choices").asJsonArray()) {
+            Node choiceNode = new Node(choice);
+            recurse(choice, choiceNode);
+            questionNode.add(choiceNode);
+          }
+          question.remove("choices");
         }
         node.add(questionNode);
-        question.remove("choices");
       }
     }
-    json.remove("links");
+    json.remove("questions");
   }
 
   private void listen() {
@@ -160,4 +151,36 @@ public class Section extends JComponent {
     return tree;
   }
 
+  public Json toJson() {
+    Json ret = Json.object();
+    Json questions = Json.array();
+
+    for (Node node : root) {
+      questions.add(toJson(node));
+    }
+
+    ret.with("title", (String) root.getValue());
+    ret.with("questions", questions);
+    return ret;
+  }
+
+  private Json toJson(Node questionNode) {
+    Json json = questionNode.getValue();
+    Json choices = Json.array();
+    for (Node choice : questionNode) {
+      Json choiceJson = choice.getValue();
+      Json childQuestions = Json.array();
+      for (Node childQuestion : choice) {
+        childQuestions.add(toJson(childQuestion));
+      }
+      if (!childQuestions.isEmpty()) {
+        choiceJson.with("questions", childQuestions);
+      }
+      choices.add(choiceJson);
+    }
+    if (!choices.isEmpty()) {
+      json.with("choices", choices);
+    }
+    return json;
+  }
 }
