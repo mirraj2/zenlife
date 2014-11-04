@@ -54,9 +54,6 @@ public class ZPopupMenu {
 
     JTabbedPane tabs = editor.getTabs();
     for (int i = 0; i < tabs.getTabCount(); i++) {
-      if (tabs.getComponentAt(i) == section) {
-        continue;
-      }
       JMenuItem item = new JMenuItem(tabs.getTitleAt(i));
       final int tabIndex = i;
       item.addActionListener(new ActionListener() {
@@ -94,7 +91,7 @@ public class ZPopupMenu {
       Node node = getSelectedNode();
       node.add(new Node(Json.object().with("text", "Zenlife is awesome.")));
       section.refresh(node);
-      
+
       TreePath path = section.getTree().getSelectionPath();
       section.getTree().expandPath(path);
     }
@@ -165,13 +162,15 @@ public class ZPopupMenu {
     JTree tree = section.getTree();
     for (TreePath path : tree.getSelectionPaths()) {
       Node node = (Node) path.getLastPathComponent();
-      if (node.getDepth() != 1) { // only transfer root questions
+      Json json = node.getValue();
+      if (!json.has("id")) {
         continue;
       }
+      Node parent = node.getParent();
       newSection.addNode(node);
+      section.refresh(parent);
     }
 
-    section.refresh();
     newSection.refresh();
   }
 

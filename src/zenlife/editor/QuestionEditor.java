@@ -29,21 +29,16 @@ public class QuestionEditor extends JComponent {
 
   public QuestionEditor() {
     setLayout(new MigLayout("insets 10, gap 10"));
-    try {
-      model = IO.from(new File("questions.json")).toJson();
-      initUI();
-    } catch (Exception e) {
-      JPanel panel = new JPanel();
-      DND.addDragListener(panel, new DragListener() {
-        @Override
-        public void handleDrop(Object data, int x, int y) {
-          droppedFile = (File) data;
-          model = IO.from(droppedFile).toJson();
-          initUI();
-        }
-      });
-      add(panel, "width 100%, height 100%");
-    }
+    JPanel panel = new JPanel();
+    DND.addDragListener(panel, new DragListener() {
+      @Override
+      public void handleDrop(Object data, int x, int y) {
+        droppedFile = (File) data;
+        model = IO.from(droppedFile).toJson();
+        initUI();
+      }
+    });
+    add(panel, "width 100%, height 100%");
   }
 
   private void initUI() {
