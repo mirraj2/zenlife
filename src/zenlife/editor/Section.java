@@ -1,12 +1,16 @@
 package zenlife.editor;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Integer.parseInt;
 import jasonlib.Json;
 import jasonlib.swing.component.GPanel;
 import jasonlib.swing.component.GTextField;
 import java.awt.Component;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,10 +20,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import net.miginfocom.swing.MigLayout;
+import com.google.common.collect.Lists;
 
 public class Section extends JComponent {
 
+  private static Section fromSection;
+  private static List<Node> copiedNodes;
+  private static boolean cut;
   public static int MAX_ID = -1;
 
   private final Json json;
@@ -150,6 +159,70 @@ public class Section extends JComponent {
         }
       }
     });
+
+    tree.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(KeyEvent e) {
+        int code = e.getKeyCode();
+        if (e.isMetaDown()) {
+          if (code == KeyEvent.VK_C || code == KeyEvent.VK_X) {
+            fromSection = Section.this;
+            copiedNodes = null;
+            cut = code == KeyEvent.VK_X;
+            TreePath[] paths = tree.getSelectionPaths();
+            if (paths == null) {
+              return;
+            }
+            List<Node> nodes = Lists.newArrayList();
+            for (TreePath path : paths) {
+              nodes.add((Node) path.getLastPathComponent());
+            }
+            boolean question = isQuestion(nodes.get(0));
+            for (Node node : nodes) {
+              checkState(isQuestion(node) == question, "All nodes must be questions or choices.");
+            }
+            copiedNodes = nodes;
+          } else if (code == KeyEvent.VK_V) {
+            TreePath path = tree.getSelectionPath();
+            if (path == null || copiedNodes == null) {
+              return;
+            }
+            List<Node> nodes = copiedNodes;
+            if (!cut) {
+              nodes = copy(nodes);
+            }
+            Node newParent = (Node) path.getLastPathComponent();
+            for (Node n : nodes) {
+              Node oldParent = n.getParent();
+              newParent.add(n);
+              fromSection.refresh(oldParent);
+            }
+            refresh(newParent);
+          }
+        }
+      }
+    });
+  }
+
+  private List<Node> copy(List<Node> nodes) {
+    List<Node> ret = Lists.newArrayList();
+    for (Node node : nodes) {
+      ret.add(copy(node));
+    }
+    return ret;
+  }
+
+  private Node copy(Node node) {
+    Node ret = node.copy();
+    for (Node n : ret.all()) {
+      Json json = n.getValue();
+      n.setValue(new Json(json.toString()));
+    }
+    return ret;
+  }
+
+  private boolean isQuestion(Node node) {
+    return node.<Json> getValue().has("id");
   }
 
   public String getTitle() {

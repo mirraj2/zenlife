@@ -22,7 +22,30 @@ public class Node implements TreeNode, Iterable<Node> {
     this.value = value;
   }
 
+  public Node copy() {
+    Node ret = new Node(value);
+    for (Node child : children) {
+      ret.children.add(child.copy());
+    }
+    return ret;
+  }
+
+  public List<Node> all() {
+    return all(Lists.<Node> newArrayList());
+  }
+
+  private List<Node> all(List<Node> buffer) {
+    buffer.add(this);
+    for (Node child : children) {
+      child.all(buffer);
+    }
+    return buffer;
+  }
+
   public void add(Node child) {
+    if (children.contains(child)) {
+      remove(child);
+    }
     add(child, getChildCount());
   }
 
