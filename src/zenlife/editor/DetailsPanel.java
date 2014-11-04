@@ -9,6 +9,7 @@ import jasonlib.swing.global.Components;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.event.ChangeEvent;
@@ -82,6 +83,7 @@ public class DetailsPanel extends JPanel {
     final GTextArea textField = new GTextArea(json.get("text")).rows(4).editable().border();
     final GComboBox<String> typeField = new GComboBox<String>("single-choice", "multi-choice", "number", "other")
         .select(json.get("type"));
+    final JCheckBox knockout = new JCheckBox("", json.has("knockout"));
 
     idField.addChangeListener(new ChangeListener() {
       @Override
@@ -105,6 +107,17 @@ public class DetailsPanel extends JPanel {
       }
     });
 
+    knockout.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (knockout.isSelected()) {
+          json.with("knockout", true);
+        } else {
+          json.remove("knockout");
+        }
+      }
+    });
+
     // it's a question!
     add(new GLabel("id").bold(), "");
     add(idField, "width 100%, wrap");
@@ -112,6 +125,8 @@ public class DetailsPanel extends JPanel {
     add(textField, "width 100%, height pref!, wrap");
     add(new GLabel("type").bold(), "");
     add(typeField, "width pref!, wrap");
+    add(new GLabel("knockout").bold(), "");
+    add(knockout, "wrap");
   }
 
 }

@@ -1,6 +1,7 @@
 var SEX = -6;
 var AGE = -5;
 var SMOKING = -4;
+var RATES = 0;
 
 function showFinalRates() {
 	row.empty();
@@ -16,9 +17,9 @@ function showFinalRates() {
 		row.append($("<h3>").html(
 				"Good News. You've qualified for <b>$" + coverage.formatMoney(0)
 						+ "</b> of life insurance at a low rate of <b>$" + data.rate.formatMoney(2) + "</b> / month"));
-		
+
 		row.append($("<h4>").text("You can purchase now, or come back when you're ready."));
-		
+
 		backButton();
 		row.append($("<button id='next-button' type='button' class='btn btn-success'>").text("Purchase"));
 
@@ -26,24 +27,20 @@ function showFinalRates() {
 	});
 }
 
-function showRatesTable() {
-	row.append($("<img id='ajax-loader' src='img/loading.gif'>"));
+function getRatesTable() {
+	var ret = $("<div>");
 
-	var div = $("<div>");
-	row.append(div);
+	ret.append($("<img id='ajax-loader' src='img/loading.gif'>"));
 
 	console.log("Showing rates table...");
 
 	var inputs = {
-		sex : savedQuestions[SEX],
-		age : savedQuestions[AGE],
-		smoking : savedQuestions[SMOKING],
+		sex : savedAnswers[SEX][0],
+		age : savedAnswers[AGE],
+		smoking : savedAnswers[SMOKING][0],
 	};
 
 	$.getJSON("/getRates", inputs, function(data) {
-		if (!isRatesQuestion()) {
-			return;
-		}
 		var table = $("<table class='table table-hover'>");
 
 		table.append($("<thead>").append(
@@ -56,7 +53,7 @@ function showRatesTable() {
 			row.append($("<td>").text("$ " + data[i + 1].formatMoney(2) + " / month"));
 			body.append(row);
 
-			if (currentQuestion.answer == data[i]) {
+			if (savedAnswers[RATES] == data[i]) {
 				row.addClass("success");
 			}
 
@@ -64,26 +61,25 @@ function showRatesTable() {
 		}
 		table.append(body);
 
-		$("#ajax-loader").hide();
-		div.append(table);
+		ret.empty().append(table);
+
+		syncNextButton();
 
 		table.on('click', 'tbody tr', function(event) {
 			$(this).addClass('success').siblings().removeClass('success');
-			$("#next-button").removeClass("disabled");
+			var rate = $("tr.success").data("coverage");
+			if (rate) {
+				changeAnswer(RATES, rate);
+			}
+			syncNextButton();
 		});
-
 	});
+
+	return ret;
 }
 
-function parseRate() {
-	var rate = $("tr.success").data("coverage");
-	if (rate) {
-		currentQuestion.answer = rate;
-	}
-}
-
-function isRatesQuestion() {
-	return currentQuestion && currentQuestion.text.indexOf("level of protection") != -1;
+function isRatesQuestion(question) {
+	return question.id == RATES;
 }
 
 Number.prototype.formatMoney = function(c, d, t) {

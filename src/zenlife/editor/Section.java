@@ -1,5 +1,6 @@
 package zenlife.editor;
 
+import static java.lang.Integer.parseInt;
 import jasonlib.Json;
 import jasonlib.swing.component.GPanel;
 import jasonlib.swing.component.GTextField;
@@ -18,6 +19,8 @@ import javax.swing.tree.DefaultTreeModel;
 import net.miginfocom.swing.MigLayout;
 
 public class Section extends JComponent {
+
+  public static int MAX_ID = -1;
 
   private final Json json;
   private final Node root;
@@ -91,6 +94,7 @@ public class Section extends JComponent {
 
   public void addNode(Node node) {
     root.add(node);
+    refresh();
   }
 
   private boolean contains(int n, int[] array) {
@@ -114,6 +118,11 @@ public class Section extends JComponent {
     if (json.has("questions")) {
       for (Json question : json.getJson("questions").asJsonArray()) {
         Node questionNode = new Node(question);
+        try {
+          int id = parseInt(questionNode.<Json> getValue().get("id"));
+          MAX_ID = Math.max(MAX_ID, id);
+        } catch (Exception e) {
+        }
         if (question.has("choices")) {
           for (Json choice : question.getJson("choices").asJsonArray()) {
             Node choiceNode = new Node(choice);

@@ -1,6 +1,7 @@
 package zenlife.editor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import jasonlib.Json;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
@@ -27,16 +28,24 @@ public class ZPopupMenu {
     JTree tree = section.getTree();
 
     TreePath[] paths = tree.getSelectionPaths();
-    if (paths == null) {
-      return;
-    }
 
     JPopupMenu popup = new JPopupMenu();
-    if (paths.length == 1) {
-      popup.add(moveUpAction);
-      popup.add(moveDownAction);
+    if (paths == null) {
+      popup.add(newQuestionAction);
+    } else {
+      if (paths.length == 1) {
+        Json json = getSelectedNode().getValue();
+        if (json.has("id")) {
+          popup.add(addAnswerAction);
+        } else {
+          popup.add(newQuestionAction);
+        }
+        popup.add(moveUpAction);
+        popup.add(moveDownAction);
+      }
+      popup.add(createMoveMenu());
+      popup.add(deleteAction);
     }
-    popup.add(createMoveMenu());
     popup.show(tree, x, y);
   }
 
@@ -64,6 +73,33 @@ public class ZPopupMenu {
     return moveMenu;
   }
 
+  private Action newQuestionAction = new AbstractAction("New Question") {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Node parent = getSelectedNode();
+      Node newNode = new Node(Json.object().with("id", ++Section.MAX_ID).with("text", "Isn't Zenlife awesome?")
+          .with("type", "single-choice"));
+      if (parent == null) {
+        section.addNode(newNode);
+      } else {
+        parent.add(newNode);
+        section.refresh(parent);
+      }
+    }
+  };
+
+  private Action addAnswerAction = new AbstractAction("New Answer") {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Node node = getSelectedNode();
+      node.add(new Node(Json.object().with("text", "Zenlife is awesome.")));
+      section.refresh(node);
+      
+      TreePath path = section.getTree().getSelectionPath();
+      section.getTree().expandPath(path);
+    }
+  };
+
   private Action newSectionAction = new AbstractAction("New Section") {
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -90,8 +126,26 @@ public class ZPopupMenu {
     }
   };
 
+  private Action deleteAction = new AbstractAction("Delete") {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      JTree tree = section.getTree();
+      for (TreePath path : tree.getSelectionPaths()) {
+        Node node = (Node) path.getLastPathComponent();
+        Node parent = node.getParent();
+        node.remove();
+        section.refresh(parent);
+      }
+    }
+  };
+
+  private Node getSelectedNode() {
+    TreePath path = section.getTree().getSelectionPath();
+    return path == null ? null : (Node) path.getLastPathComponent();
+  }
+
   private void move(int dir) {
-    Node node = (Node) section.getTree().getSelectionPath().getLastPathComponent();
+    Node node = getSelectedNode();
     Node parent = node.getParent();
     int index = node.getIndex();
     int newIndex = index + dir;

@@ -10,13 +10,15 @@ function createQuestionPanel(question) {
 		addChoices(ret, question, question.choices, true);
 	} else if (type == 'number') {
 		addTextChoice(ret, question);
+	} else if (type == 'other') {
+		if (isRatesQuestion(question)) {
+			ret.append(getRatesTable());
+		}
 	} else {
 		console.log("Unhandled Type: " + type);
 	}
 
 	ret.append($("<div class='children'>"));
-
-	listen(ret);
 
 	return ret;
 }
@@ -33,7 +35,7 @@ function addChoices(panel, question, choices, multiSelection) {
 		var label = $("<label for='option-" + id + "'>").text(choices[i].text);
 
 		var array = savedAnswers[question.id];
-		if ($.inArray(i, array)) {
+		if ($.inArray(i, array) != -1) {
 			input.prop("checked", true);
 		}
 
@@ -42,7 +44,7 @@ function addChoices(panel, question, choices, multiSelection) {
 			var inputs = list.find("input");
 			for (var j = 0; j < inputs.length; j++) {
 				if (inputs[j].checked) {
-					answer.push($(inputs[j]).val());
+					answer.push(parseInt($(inputs[j]).val()));
 				}
 			}
 			changeAnswer(question.id, answer);
@@ -58,6 +60,15 @@ function addTextChoice(panel, question) {
 	var input = $("<input type='number' min='0' max='99999'>");
 	var units = "";
 	panel.append(input).append($("<p style='display: inline; margin-left: 10px'>").text(units));
+
+	input.val(savedAnswers[question.id]);
+
+	var callback = function() {
+		changeAnswer(question.id, input.val());
+	};
+
+	input.keyup(callback);
+	input.change(callback);
 }
 
 function isAllCompleted() {
@@ -83,18 +94,50 @@ function isCompleted(questionPanel) {
 		return false;
 	} else if (type == 'number') {
 		var input = questionPanel.find("input");
-		if (!input.val()) {
-			return false;
+		return Boolean(input.val());
+	} else if (type == 'other') {
+		if (isRatesQuestion(question)) {
+			return $("tr.success").length > 0;
 		}
 	}
 	return true;
 }
 
 function changeAnswer(questionId, answer) {
+	console.log("Changing question " + questionId + "'s answer to: " + answer);
 	savedAnswers[questionId] = answer;
-	syncNextButton();
-	console.log(savedAnswers);
+	// console.log(JSON.stringify(savedAnswers));
 	$.cookie("questions", JSON.stringify(savedAnswers), {
 		expires : 14
 	});
+
+	syncChildren(questionId, answer);
+	syncNextButton();
+}
+
+function syncChildren(questionId) {
+	var answer = savedAnswers[questionId];
+	var questionPanel = $(".question[data-id='" + questionId + "']");
+	var question = idQuestions[questionId];
+	var childrenPanel = questionPanel.children(".children");
+
+	childrenPanel.empty();
+
+	if (!answer) {
+		return;
+	}
+
+	if (question.choices) {
+		for (var i = 0; i < answer.length; i++) {
+			var choice = question.choices[answer[i]];
+			if (choice.questions) {
+				for (var j = 0; j < choice.questions.length; j++) {
+					var q = choice.questions[j];
+					childrenPanel.append(createQuestionPanel(q));
+					syncChildren(q.id);
+				}
+			}
+		}
+		icheckify(childrenPanel);
+	}
 }

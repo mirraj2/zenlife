@@ -36,6 +36,7 @@ function nextSection() {
 		var panel = createQuestionPanel(question);
 		content.append(panel);
 		icheckify(panel);
+		syncChildren(question.id);
 	}
 	content.append($("<button id='back-button' type='button' class='btn btn-default'>").text("Back"));
 	content.append($("<button id='next-button' type='button' class='btn btn-primary'>").text("Next Questions"));
@@ -55,25 +56,6 @@ function icheckify(parent) {
 		checkboxClass : 'icheckbox_square-purple',
 		radioClass : 'iradio_square-purple',
 		increaseArea : '20%'
-	});
-}
-
-function listen(parent) {
-	parent.find("input:radio,input:checkbox").on("ifClicked", function() {
-		var questionPanel = $(this).closest(".question");
-		var questionId = questionPanel.data("id");
-		var question = idQuestions[questionPanel.data("id")];
-		var choice = question.choices[$(this).val()];
-
-		var childrenPanel = questionPanel.children(".children");
-		childrenPanel.empty();
-
-		if (choice.questions) {
-			for (var i = 0; i < choice.questions.length; i++) {
-				childrenPanel.append(createQuestionPanel(choice.questions[i]));
-			}
-			icheckify(childrenPanel);
-		}
 	});
 }
 
