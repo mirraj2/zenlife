@@ -23,6 +23,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class QuestionEditor extends JComponent {
 
+  private File droppedFile;
   private Json model;
   private final JTabbedPane tabs = new JTabbedPane();
 
@@ -36,8 +37,8 @@ public class QuestionEditor extends JComponent {
       DND.addDragListener(panel, new DragListener() {
         @Override
         public void handleDrop(Object data, int x, int y) {
-          File file = (File) data;
-          model = IO.from(file).toJson();
+          droppedFile = (File) data;
+          model = IO.from(droppedFile).toJson();
           initUI();
         }
       });
@@ -92,7 +93,7 @@ public class QuestionEditor extends JComponent {
         Section section = (Section) tabs.getComponentAt(i);
         sections.add(section.toJson());
       }
-      JFileChooser chooser = new JFileChooser(new File("."));
+      JFileChooser chooser = new JFileChooser(droppedFile == null ? new File(".") : droppedFile);
       chooser.setSelectedFile(new File("questions.json"));
       int i = chooser.showSaveDialog(QuestionEditor.this);
       if (i != JFileChooser.APPROVE_OPTION) {
