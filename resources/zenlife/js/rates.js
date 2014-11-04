@@ -5,7 +5,7 @@ var SMOKING = -4;
 function showFinalRates() {
 	row.empty();
 
-	row.append($("<img id='ajax-loader' src='img/AjaxLoader.gif'>"));
+	row.append($("<img id='ajax-loader' src='img/loading.gif'>"));
 
 	$.getJSON("/getFinalRates", savedQuestions, function(data) {
 		row.empty();
@@ -27,7 +27,7 @@ function showFinalRates() {
 }
 
 function showRatesTable() {
-	row.append($("<img id='ajax-loader' src='img/AjaxLoader.gif'>"));
+	row.append($("<img id='ajax-loader' src='img/loading.gif'>"));
 
 	var div = $("<div>");
 	row.append(div);

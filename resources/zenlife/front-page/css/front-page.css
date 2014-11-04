@@ -810,7 +810,7 @@ section .login-overlay {
 }
 .owl-item.loading {
   min-height: 150px;
-  background: url(../img/AjaxLoader.gif) no-repeat center center;
+  background: url(../img/loading.gif) no-repeat center center;
 }
 .owl-origin {
   -webkit-perspective: 1200px;

@@ -1,4 +1,4 @@
-body{
+body {
 	margin-bottom: 50px;
 }
 
@@ -28,23 +28,30 @@ body{
 	margin-left: 100px;
 }
 
-#question-panel {
+.children {
+	padding-left: 30px;
+	border-left: dotted 1px #BBBBBB;
+}
+
+#question-container {
 	margin-top: 30px;
 	width: 600px;
 	color: #444444;
 }
 
-#questions-row {
+#questions-panel {
 	margin-top: 50px;
 	margin: 0 auto;
-	width: 50%;
 }
 
-h2 {
+#questions-panel h1 {
+	border-bottom: solid 1px #999999;
+}
+
+#questions-panel h2 {
 	font-size: 22px;
 	padding-bottom: 10px;
 	margin-bottom: 20px;
-	border-bottom: solid 1px #999999;
 }
 
 label {
@@ -75,10 +82,10 @@ li {
 	width: 300px;
 }
 
-.table-hover tbody tr:hover > td {
-  cursor: pointer
+.table-hover tbody tr:hover>td {
+	cursor: pointer
 }
 
-tr .highlight{
+tr .highlight {
 	background-color: red;
 }
