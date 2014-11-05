@@ -23,12 +23,14 @@ public class EnrollController {
   }
 
   public void getFinalRates(Request req, Response resp) throws Exception {
-    boolean male = req.getParameter("-6").equals("0");
-    int age = parseInt(req.getParameter("-5"));
-    boolean smoker = !req.getParameter("-4").equals("1");
+    Json json = new Json(req.getContent());
+
+    boolean male = json.getJson("-6").getInt(0) == 0;
+    int age = parseInt(json.get("-5"));
+    boolean smoker = json.getJson("-4").getInt(0) != 1;
 
     double[] starterRates = getRates(age, male, smoker);
-    int selectedProtection = parseInt(req.getParameter("0"));
+    int selectedProtection = json.getInt("coverage");
     double starterRate = -1;
 
     for (int i = 0; i < starterRates.length; i += 2) {

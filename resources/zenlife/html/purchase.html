@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/favicon.ico">
 
     <title>ZenLife</title>
     
@@ -15,53 +16,56 @@
   </head>
   
   <body>
-    <!-- NAVBAR
+    <!-- HEADER
     ================================================== -->
     <div class="header">
         <h1><a href="/">ZenLife</a></h1>
     </div>
     
-    <!-- Question Area
+    <!-- Purchase Area
     ================================================== -->
-    <div id="container" class="container">
-      <div id="container-row" class="row">
-        <h3>Start your <b>$300,000</b> policy today for <b>$68.62</b> / month</h3>
-        
-        <div class="card-wrapper"></div>
-        <div class="container">
-          <div class="row">
-            <div class="col-md-4">
-              <form id="card-form" role="form">
-                <div class="form-group">
-                  <label>Cardholder's Name</label>
-                  <input id="name" type="text" class="form-control">
-                </div>
-                <div class="form-group">
-                  <label>Card Number</label>
-                  <input id="number" type="text" class="form-control">
-                </div>
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label>Expiration</label>
-                      <input id="expiry" type="text" class="form-control" placeholder="YYYY">
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="form-group">
-                      <label>CVC</label>
-                      <input id="cvc" type="text" class="form-control" placeholder="Ex. 331">
-                    </div>
-                  </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Pay Now</button>
-              </form>
+    <div id="loading">
+      <img id='spinning' src='img/loading.gif'>
+    </div>
+    
+    <div id="congrats" class="container invisible">
+      <h3>Congratulations! You are now covered.</h3>
+      <h4>Your policy documents should arrive in the next few minutes.</h4>
+    </div>
+    
+    <div id="card-container" class="container invisible">
+    <h3>Start your <b id="coverage">$300,000</b> policy today for <b id="price">$68.62</b> / month</h3><br>
+      <div class="row">
+        <div class="col-md-5">
+          <form id="card-form" role="form">
+            <div class="form-group">
+              <label>Card Number</label>
+              <input id="number" name="number" type="text" class="form-control">
             </div>
-            <div class="col-md-4"></div>
-            <div class="col-md-4"></div>
-          </div>
+            <div class="form-group">
+              <label>Cardholder's Name</label>
+              <input id="name" name="name" type="text" class="form-control">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Expiration</label>
+                  <input id="expiry" name="expiry" type="text" class="form-control" placeholder="MM/YY">
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="form-group">
+                  <label>CVC</label>
+                  <input id="cvc" name="CVC" type="text" class="form-control" placeholder="Ex. 331">
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Pay Now</button>
+          </form>
         </div>
-        <!-- <img id="ajax-loader" src="img/loading.gif"> -->
+        <div class="col-md-7">
+          <div class="card-wrapper"></div>
+        </div>
       </div>
     </div>
     
@@ -70,6 +74,8 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="/js/rates.js"></script>
     <script src="/js/card.js"></script>
     <script src="/js/purchase.js"></script>
   </body>

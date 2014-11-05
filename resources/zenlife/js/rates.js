@@ -4,26 +4,25 @@ var SMOKING = -4;
 var RATES = "coverage";
 
 function showFinalRates() {
-	row.empty();
+	var questionData = $.cookie("questions");
+	questionData = JSON.parse(questionData);
 
-	row.append($("<img id='ajax-loader' src='img/loading.gif'>"));
+	$.ajax("/getFinalRates", {
+		data : JSON.stringify(questionData),
+		contentType : 'application/json',
+		type : 'POST'
+	}).done(function(data) {
+		data = JSON.parse(data);
+		$("#loading").hide();
 
-	$.getJSON("/getFinalRates", savedQuestions, function(data) {
-		row.empty();
-
-		var coverage = savedQuestions[0];
+		var coverage = questionData.coverage;
 		var benchmark = data.benchmark_rate;
+		var rate = data.rate;
+		
+		$("#coverage").text("$" + coverage.formatMoney(0));
+		$("#price").text("$" + rate.formatMoney(2));
 
-		row.append($("<h3>").html(
-				"Good News. You've qualified for <b>$" + coverage.formatMoney(0)
-						+ "</b> of life insurance at a low rate of <b>$" + data.rate.formatMoney(2) + "</b> / month"));
-
-		row.append($("<h4>").text("You can purchase now, or come back when you're ready."));
-
-		backButton();
-		row.append($("<button id='next-button' type='button' class='btn btn-success'>").text("Purchase"));
-
-		// row.append($("<h4>").text("benchmark: $" + benchmark.formatMoney(2)));
+		$("#card-container").removeClass("invisible");
 	});
 }
 

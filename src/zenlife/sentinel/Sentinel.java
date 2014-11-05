@@ -1,18 +1,19 @@
 package zenlife.sentinel;
 
-import jasonlib.Log;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
+import zenlife.db.SessionDB;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 public class Sentinel {
 
-  private static final Set<String> excluded = ImmutableSet.of("js", "css", "png", "jpg", "gif", "ico", "woff");
+  private static final Set<String> excluded = ImmutableSet.of("js", "css", "png", "jpg", "gif", "ico", "woff", "json");
+
+  private final SessionDB sessionDB = new SessionDB();
 
   private final Map<String, DataFile> map = Maps.newConcurrentMap();
 
@@ -24,6 +25,14 @@ public class Sentinel {
       }
 
       String token = getSessionToken(req, resp);
+
+      String path = req.getPath().getPath().toLowerCase();
+      if (path.contains("enroll")) {
+        sessionDB.markEnrollVisited(token);
+      } else if (path.contains("purchase")) {
+        sessionDB.markPurchaseVisited(token);
+      }
+
       DataFile file = getFile(token);
       file.record(req);
     } catch (Exception e) {
@@ -38,15 +47,13 @@ public class Sentinel {
       sessionCookie = new Cookie("session", sessionId);
       final int secondsPerDay = 60 * 60 * 24;
       sessionCookie.setExpiry(secondsPerDay * 30);
-      Log.debug(sessionCookie.getExpiry());
       resp.setCookie(sessionCookie);
     }
     return sessionCookie.getValue();
   }
 
   private String openSession(Request req) {
-    String sessionId = UUID.randomUUID().toString();
-    Log.info("Opening new session: " + sessionId);
+    String sessionId = sessionDB.createSession(req);
 
     DataFile file = getFile(sessionId);
 

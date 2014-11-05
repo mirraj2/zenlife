@@ -9,11 +9,15 @@ function createQuestionPanel(question) {
 		addChoices(ret, question, question.choices, false);
 	} else if (type == 'multi-choice') {
 		addChoices(ret, question, question.choices, true);
+	} else if (type == 'combobox') {
+		addComboBox(ret, question, question.choices, header);
 	} else if (type == 'number') {
 		addNumberInput(ret, question, header);
 	} else if (type == 'other') {
 		if (isRatesQuestion(question)) {
 			ret.append(getRatesTable());
+		} else if (question.id == 'height') {
+			addHeightInput(ret, question, header);
 		}
 	} else if (type == 'text-input') {
 		addTextInput(ret, question, header);
@@ -26,6 +30,26 @@ function createQuestionPanel(question) {
 	ret.append($("<div class='children'>"));
 
 	return ret;
+}
+
+function addComboBox(panel, question, choices, header) {
+	header.addClass("inline");
+
+	if (!savedAnswers[question.id]) {
+		changeAnswer(question.id, 0);
+	}
+
+	var select = $("<select class='inline2'>");
+	for (var i = 0; i < choices.length; i++) {
+		var option = $("<option value='" + i + "'>").text(choices[i].text);
+
+		select.append(option);
+	}
+	panel.append(select);
+	
+	select.change(function(){
+		changeAnswer(question.id, 0);
+	});
 }
 
 function addDialog(header) {
@@ -43,7 +67,6 @@ function addChoices(panel, question, choices, multiSelection) {
 	for (var i = 0; i < choices.length; i++) {
 		var item = ($("<li>"))
 		var id = question.id + "" + i;
-		console.log(id);
 		var input = $("<input type='" + type + "' name='question-" + question.id + "' id='option-" + id + "' value='" + i
 				+ "'>");
 		var label = $("<label for='option-" + id + "'>").text(choices[i].text);
@@ -84,6 +107,36 @@ function addNumberInput(panel, question, header) {
 
 	input.keyup(callback);
 	input.change(callback);
+}
+
+function addHeightInput(panel, question, header) {
+	header.addClass("inline");
+
+	var feet, inches;
+
+	var saved = savedAnswers[question.id];
+	if (saved) {
+		saved = saved.split(".");
+		feet = saved[0];
+		inches = saved[1];
+	}
+
+	var feetInput = $("<input id='feet-input' class='inline2' type='number' min='1' max='9' style='width: 30px'>").val(
+			feet);
+	var inchesInput = $("<input id='inches-input' class='inline2' type='number' min='0' max='11' style='width: 40px'>")
+			.val(inches);
+	panel.append(feetInput).append($("<label>").text("ft."));
+	panel.append(inchesInput).append($("<label>").text("in."));
+
+	var callback = function() {
+		var val = feetInput.val() + "." + inchesInput.val();
+		changeAnswer(question.id, val);
+	};
+
+	feetInput.keyup(callback);
+	feetInput.change(callback);
+	inchesInput.keyup(callback);
+	inchesInput.change(callback);
 }
 
 function addTextInput(panel, question, header) {
@@ -132,6 +185,8 @@ function isCompleted(questionPanel) {
 	} else if (type == 'other') {
 		if (isRatesQuestion(question)) {
 			return $("tr.success").length > 0;
+		} else if (question.id == 'height') {
+			return $("#feet-input").val();
 		}
 	}
 	return true;

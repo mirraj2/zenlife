@@ -105,7 +105,7 @@ public class ZenlifeServer implements Container {
   @SuppressWarnings("resource")
   public static void main(String[] args) throws Exception {
     int port = Config.load("zenlife").getInt("port", 80);
-    
+
     ZenlifeServer zenServer = new ZenlifeServer();
     Server server = new ContainerServer(zenServer);
     Connection connection = new SocketConnection(server);
