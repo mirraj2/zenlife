@@ -9,9 +9,8 @@
     
     <!-- CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="icheck/square/purple.css" rel="stylesheet">
     <link href="css/header.css" rel="stylesheet">
-    <link href="css/enroll.css" rel="stylesheet">
+    <link href="css/purchase.css" rel="stylesheet">
   </head>
   
   <body>
@@ -23,9 +22,22 @@
     
     <!-- Question Area
     ================================================== -->
-    <div id="question-container" class="container">
-      <div id="questions-panel" class="row">
-        <img id="ajax-loader" src="img/loading.gif">
+    <div id="container" class="container">
+      <div id="container-row" class="row">
+        <form role="form" class="form-horizontal">
+          <div class="form-group">
+            <h3>Start your <b>$300,000</b> policy today for <b>$68.62</b> / month</h3>
+            <p>Please enter a few details below to save your application and quote.</p>
+            <label for="name-input" class="control-label">Name:</label><input id="name-input" type="text" /><br>
+          </div>
+          <div class="form-group">
+            <label for="email-input" class="control-label">Email:</label><input id="email-input" type="text" /><br>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Save and Continue</button>
+          </div>
+        </form>
+        <!-- <img id="ajax-loader" src="img/loading.gif"> -->
       </div>
     </div>
     
@@ -34,10 +46,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.1/icheck.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script src="/js/rates.js"></script>
-    <script src="/js/question-ui.js"></script>
-    <script src="/js/enroll.js"></script>
+    <script src="/js/purchase.js"></script>
   </body>
 </html>

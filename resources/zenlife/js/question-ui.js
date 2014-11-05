@@ -1,7 +1,8 @@
 function createQuestionPanel(question) {
 	var ret = $("<div class='question' data-id='" + question.id + "'>");
 
-	ret.append($("<h2>").text(question.text));
+	var header = $("<h2>").text(question.text);
+	ret.append(header);
 
 	var type = question.type;
 	if (type == "single-choice") {
@@ -9,11 +10,15 @@ function createQuestionPanel(question) {
 	} else if (type == 'multi-choice') {
 		addChoices(ret, question, question.choices, true);
 	} else if (type == 'number') {
-		addTextChoice(ret, question);
+		addNumberInput(ret, question, header);
 	} else if (type == 'other') {
 		if (isRatesQuestion(question)) {
 			ret.append(getRatesTable());
 		}
+	} else if(type == 'text-input'){
+		 addTextInput(ret, question, header);
+	}	else if (type == 'dialog') {
+		 addDialog(header);
 	} else {
 		console.log("Unhandled Type: " + type);
 	}
@@ -23,7 +28,15 @@ function createQuestionPanel(question) {
 	return ret;
 }
 
+function addDialog(header){
+	header.addClass("dialog");
+}
+
 function addChoices(panel, question, choices, multiSelection) {
+	if (!choices) {
+		return;
+	}
+
 	var type = multiSelection ? "checkbox" : "radio";
 
 	var list = $("<ul class='choices'>");
@@ -56,10 +69,27 @@ function addChoices(panel, question, choices, multiSelection) {
 	panel.append(list);
 }
 
-function addTextChoice(panel, question) {
-	var input = $("<input type='number' min='0' max='99999'>");
-	var units = "";
-	panel.append(input).append($("<p style='display: inline; margin-left: 10px'>").text(units));
+function addNumberInput(panel, question, header) {
+	header.addClass("inline");
+	
+	var input = $("<input class='inline2' type='number' min='0' max='99999'>");
+	panel.append(input);
+
+	input.val(savedAnswers[question.id]);
+
+	var callback = function() {
+		changeAnswer(question.id, input.val());
+	};
+
+	input.keyup(callback);
+	input.change(callback);
+}
+
+function addTextInput(panel, question, header){
+	header.addClass("inline");
+	
+	var input = $("<input class='inline2' type='text'>");
+	panel.append(input);
 
 	input.val(savedAnswers[question.id]);
 
@@ -86,6 +116,9 @@ function isCompleted(questionPanel) {
 	var type = question.type;
 	if (type == "single-choice" || type == "multi-choice") {
 		var choices = questionPanel.children(".choices").find("input");
+		if (choices.length == 0) {
+			return true;
+		}
 		for (var i = 0; i < choices.length; i++) {
 			if (choices[i].checked) {
 				return true;

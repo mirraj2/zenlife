@@ -3,7 +3,9 @@ package zenlife;
 import jasonlib.Config;
 import jasonlib.IO;
 import jasonlib.Log;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,19 +17,23 @@ import org.simpleframework.http.core.ContainerServer;
 import org.simpleframework.transport.Server;
 import org.simpleframework.transport.connect.Connection;
 import org.simpleframework.transport.connect.SocketConnection;
+import zenlife.sentinel.Sentinel;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
 public class ZenlifeServer implements Container {
 
   private final EnrollController enrollController = new EnrollController();
+  private final Sentinel sentinel = new Sentinel();
 
   @Override
   public void handle(Request req, Response resp) {
-    String s = req.getPath().toString();
-    Log.debug("Handling: " + s + " (" + req.getClientAddress().getAddress().getHostAddress() + ")");
-
     try {
+      String s = req.getPath().toString();
+      Log.debug("Handling: " + s + " (" + req.getClientAddress().getAddress().getHostAddress() + ")");
+
+      sentinel.handle(req, resp);
+
       if (s.equals("/")) {
         s += "index";
       }
@@ -91,14 +97,30 @@ public class ZenlifeServer implements Container {
     }
   }
 
+  public void exit() {
+    sentinel.exit();
+    System.exit(0);
+  }
+
   @SuppressWarnings("resource")
   public static void main(String[] args) throws Exception {
     int port = Config.load("zenlife").getInt("port", 80);
     
-    Server server = new ContainerServer(new ZenlifeServer());
+    ZenlifeServer zenServer = new ZenlifeServer();
+    Server server = new ContainerServer(zenServer);
     Connection connection = new SocketConnection(server);
     connection.connect(new InetSocketAddress(port));
     Log.debug("Server started on port " + port);
+
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String line = br.readLine();
+    while (line != null) {
+      if (line.equalsIgnoreCase("exit")) {
+        Log.info("exiting...");
+        zenServer.exit();
+      }
+      line = br.readLine();
+    }
   }
 
 }

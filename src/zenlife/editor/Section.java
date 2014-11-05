@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -75,17 +76,28 @@ public class Section extends JComponent {
   private JPanel createSectionOptions() {
     GPanel ret = new GPanel(new MigLayout("insets 0"));
     final GTextField titleField = new GTextField(json.get("title"));
+    final GTextField buttonField = new GTextField(json.get("next-button-text"));
 
     titleField.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
-        root.setValue(titleField.getText());
+        json.with("title", titleField.getText());
         editor.updateTitles();
       }
     });
 
+    buttonField.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        json.with("next-button-text", buttonField.getText());
+      }
+    });
+
     ret.add("Section Title:", "");
-    ret.add(titleField, "width 400!");
+    ret.add(titleField, "width 300!");
+    ret.add(Box.createHorizontalGlue(), "width 100%");
+    ret.add("Next Button Text:", "");
+    ret.add(buttonField, "width 200!");
     return ret;
   }
 
@@ -116,9 +128,11 @@ public class Section extends JComponent {
   }
 
   private Node constructTree(Json json) {
-    Node ret = new Node(json.get("title"));
+    Node ret = new Node(json);
 
     recurse(json, ret);
+
+    json.remove("questions");
 
     return ret;
   }
@@ -226,7 +240,7 @@ public class Section extends JComponent {
   }
 
   public String getTitle() {
-    return root.toString();
+    return root.<Json> getValue().get("title");
   }
 
   public JTree getTree() {
@@ -241,7 +255,8 @@ public class Section extends JComponent {
       questions.add(toJson(node));
     }
 
-    ret.with("title", (String) root.getValue());
+    ret.with("title", json.get("title"));
+    ret.with("next-button-text", json.get("next-button-text"));
     ret.with("questions", questions);
     return ret;
   }

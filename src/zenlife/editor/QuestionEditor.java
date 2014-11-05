@@ -25,7 +25,7 @@ public class QuestionEditor extends JComponent {
 
   private File droppedFile;
   private Json model;
-  private final JTabbedPane tabs = new JTabbedPane();
+  private final JTabbedPane tabs = new DraggableTabbedPane();
 
   public QuestionEditor() {
     setLayout(new MigLayout("insets 10, gap 10"));
@@ -45,6 +45,10 @@ public class QuestionEditor extends JComponent {
     removeAll();
 
     for (Json section : model.asJsonArray()) {
+      if (!section.has("next-button-text")) {
+        // BACKCOMPAT
+        section.with("next-button-text", "Next Questions");
+      }
       tabs.addTab(section.get("title"), new Section(this, section));
     }
 
@@ -64,6 +68,10 @@ public class QuestionEditor extends JComponent {
     model.add(sectionJson);
     tabs.addTab(name, new Section(this, sectionJson));
     return tabs.getTabCount() - 1;
+  }
+
+  public void removeSection(Section section) {
+    tabs.remove(section);
   }
 
   public JTabbedPane getTabs() {

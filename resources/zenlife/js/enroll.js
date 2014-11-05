@@ -25,7 +25,11 @@ function loadSavedAnswers() {
 }
 
 function nextSection() {
-	section = sections[++sectionIndex];
+	if (++sectionIndex == sections.length) {
+		window.location.href = "/purchase";
+	}
+
+	section = sections[sectionIndex];
 
 	content.empty();
 	content.append($("<h1>").text(section.title));
@@ -38,8 +42,14 @@ function nextSection() {
 		icheckify(panel);
 		syncChildren(question.id);
 	}
+
+	var nextButtonText = section["next-button-text"];
+	if (!nextButtonText) {
+		nextButtonText = "Next Questions";
+	}
+
 	content.append($("<button id='back-button' type='button' class='btn btn-default'>").text("Back"));
-	content.append($("<button id='next-button' type='button' class='btn btn-primary'>").text("Next Questions"));
+	content.append($("<button id='next-button' type='button' class='btn btn-primary'>").text(nextButtonText));
 
 	syncNextButton();
 

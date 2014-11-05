@@ -32,6 +32,7 @@ public class ZPopupMenu {
     JPopupMenu popup = new JPopupMenu();
     if (paths == null) {
       popup.add(newQuestionAction);
+      popup.add(deleteSectionAction);
     } else {
       if (paths.length == 1) {
         Json json = getSelectedNode().getValue();
@@ -133,6 +134,18 @@ public class ZPopupMenu {
         node.remove();
         section.refresh(parent);
       }
+    }
+  };
+
+  private Action deleteSectionAction = new AbstractAction("Delete Section") {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      int i = JOptionPane.showConfirmDialog(editor, "This will delete this entire tab. Are you sure?",
+          "Delete Section?", JOptionPane.YES_NO_OPTION);
+      if (i != JOptionPane.YES_OPTION) {
+        return;
+      }
+      editor.removeSection(section);
     }
   };
 
