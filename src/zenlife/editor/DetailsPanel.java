@@ -93,7 +93,7 @@ public class DetailsPanel extends JPanel {
   }
 
   private void questionUI(final Json json) {
-    final GTextField idField = new GTextField(json.getInt("id") + "");
+    final GTextField idField = new GTextField(json.get("id") + "");
     final GTextArea textField = new GTextArea(json.get("text")).rows(4).editable().border();
     final GComboBox<String> typeField = new GComboBox<String>("single-choice", "multi-choice", "number", "text-input",
         "dialog", "other")

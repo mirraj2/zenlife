@@ -9,7 +9,7 @@ body {
 
 .inline {
 	display: inline-block;
-    margin-top: 10px;
+	margin-top: 10px;
 }
 
 .inline2 {
@@ -41,7 +41,7 @@ body {
 	font-weight: 900;
 }
 
-#questions-panel .dialog{
+#questions-panel .dialog {
 	color: #37538c;
 	font-size: 20px;
 }
@@ -53,20 +53,19 @@ body {
 #questions-panel label {
 	font-size: 12px;
 	font-weight: 500;
-}
-
-label {
 	cursor: pointer;
 	margin-left: 10px;
+	display: inline;
+}
+
+#questions-panel li {
+	cursor: pointer;
+	margin-top: 5px;
 }
 
 ul {
 	list-style: none;
 	padding-left: 0px;
-}
-
-li {
-	cursor: pointer;
 }
 
 #back-button {

@@ -15,10 +15,10 @@ function createQuestionPanel(question) {
 		if (isRatesQuestion(question)) {
 			ret.append(getRatesTable());
 		}
-	} else if(type == 'text-input'){
-		 addTextInput(ret, question, header);
-	}	else if (type == 'dialog') {
-		 addDialog(header);
+	} else if (type == 'text-input') {
+		addTextInput(ret, question, header);
+	} else if (type == 'dialog') {
+		addDialog(header);
 	} else {
 		console.log("Unhandled Type: " + type);
 	}
@@ -28,7 +28,7 @@ function createQuestionPanel(question) {
 	return ret;
 }
 
-function addDialog(header){
+function addDialog(header) {
 	header.addClass("dialog");
 }
 
@@ -43,6 +43,7 @@ function addChoices(panel, question, choices, multiSelection) {
 	for (var i = 0; i < choices.length; i++) {
 		var item = ($("<li>"))
 		var id = question.id + "" + i;
+		console.log(id);
 		var input = $("<input type='" + type + "' name='question-" + question.id + "' id='option-" + id + "' value='" + i
 				+ "'>");
 		var label = $("<label for='option-" + id + "'>").text(choices[i].text);
@@ -71,7 +72,7 @@ function addChoices(panel, question, choices, multiSelection) {
 
 function addNumberInput(panel, question, header) {
 	header.addClass("inline");
-	
+
 	var input = $("<input class='inline2' type='number' min='0' max='99999'>");
 	panel.append(input);
 
@@ -85,9 +86,9 @@ function addNumberInput(panel, question, header) {
 	input.change(callback);
 }
 
-function addTextInput(panel, question, header){
+function addTextInput(panel, question, header) {
 	header.addClass("inline");
-	
+
 	var input = $("<input class='inline2' type='text'>");
 	panel.append(input);
 
@@ -125,7 +126,7 @@ function isCompleted(questionPanel) {
 			}
 		}
 		return false;
-	} else if (type == 'number') {
+	} else if (type == 'number' || type == 'text-input') {
 		var input = questionPanel.find("input");
 		return Boolean(input.val());
 	} else if (type == 'other') {

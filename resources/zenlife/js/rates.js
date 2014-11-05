@@ -1,7 +1,7 @@
 var SEX = -6;
 var AGE = -5;
 var SMOKING = -4;
-var RATES = 0;
+var RATES = "coverage";
 
 function showFinalRates() {
 	row.empty();
