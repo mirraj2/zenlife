@@ -76,7 +76,7 @@ function addChoices(panel, question, choices, multiSelection) {
 			input.prop("checked", true);
 		}
 
-		input.on("ifToggled", function() {
+		input.change(function() {
 			var answer = [];
 			var inputs = list.find("input");
 			for (var j = 0; j < inputs.length; j++) {
@@ -227,6 +227,5 @@ function syncChildren(questionId) {
 				}
 			}
 		}
-		icheckify(childrenPanel);
 	}
 }

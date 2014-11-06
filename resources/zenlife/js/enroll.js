@@ -39,7 +39,6 @@ function nextSection() {
 		var question = questions[i];
 		var panel = createQuestionPanel(question);
 		content.append(panel);
-		icheckify(panel);
 		syncChildren(question.id);
 	}
 
@@ -59,14 +58,6 @@ function nextSection() {
 		nextSection();
 	});
 	$("#back-button").toggleClass("disabled", sectionIndex == 0);
-}
-
-function icheckify(parent) {
-	parent.find("input").iCheck({
-		checkboxClass : 'icheckbox_square-purple',
-		radioClass : 'iradio_square-purple',
-		increaseArea : '20%'
-	});
 }
 
 function syncNextButton() {
