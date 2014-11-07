@@ -7,8 +7,8 @@ import java.io.File;
 
 public class RService {
 
-  private static final String envName = "20141031105048.zenenv";
-  private static final String scriptName = "get_rate_ss.r";
+  private static final String envName = "zenenv.rdata";
+  private static final String scriptName = "get_rate_soa.r";
 
   private final File folder, envFile, scriptFile;
 
@@ -17,28 +17,68 @@ public class RService {
     envFile = new File(folder, envName);
     scriptFile = new File(folder, scriptName);
 
-    if (!envFile.exists()) {
-      Log.info("creating file: " + envFile);
-      IO.from(getClass(), "data/" + envName).to(envFile);
-    }
-    if (!scriptFile.exists()) {
-      Log.info("creating file: " + scriptFile);
-      IO.from(getClass(), "data/" + scriptName).to(scriptFile);
-    }
+    Log.info("extracting " + envFile);
+    IO.from(getClass(), "data/zenenv.rdata").to(envFile);
+
+    Log.info("extracting " + scriptFile);
+    IO.from(getClass(), "data/" + scriptName).to(scriptFile);
   }
 
-  public double query(int age, int term, int coverage, boolean male, boolean smoker) throws Exception {
-    String distribution = male ? "male_" : "female_";
-    distribution += smoker ? "smoker" : "nonsmoker";
-    distribution += "_ss";
+  private static int round(int riskRatio, boolean smoker, boolean roundUp) {
+    int increment = smoker ? 25 : 10;
+    int min = smoker ? 75 : 70;
 
-    StringBuilder sb = new StringBuilder("Rscript");
-    sb.append(" --slave ").append(scriptFile);
-    sb.append(" --age ").append(age);
-    sb.append(" --term ").append(term);
-    sb.append(" --face ").append(coverage);
-    sb.append(" --distribution ").append(distribution);
-    sb.append(" --working_directory ").append(folder);
+    if (riskRatio < min) {
+      return min;
+    }
+
+    if (riskRatio % increment == 0) {
+      return riskRatio;
+    }
+
+    int ret = riskRatio / increment * increment;
+
+    if (roundUp) {
+      ret += increment;
+    }
+
+    return ret;
+  }
+
+  public double query(int age, int term, int coverage, boolean male, boolean smoker, double riskRatio) throws Exception {
+    riskRatio = Math.round(riskRatio * 100);
+
+    int risk1 = round((int) riskRatio, smoker, false);
+    int risk2 = round((int) riskRatio, smoker, true);
+
+    double result1 = query2(age, term, coverage, male, smoker, risk1);
+    if (risk1 == risk2) {
+      return result1;
+    }
+
+    double result2 = query2(age, term, coverage, male, smoker, risk2);
+    double p = (riskRatio - risk1) / (risk2 - risk1);
+
+    return result1 + p * (result2 - result1);
+  }
+
+  public double query2(int age, int term, int coverage, boolean male, boolean smoker, int riskRatio)
+      throws Exception {
+    StringBuilder distribution = new StringBuilder()
+        .append("alb_")
+        .append(riskRatio).append("_")
+        .append(male ? "male_" : "female_")
+        .append(smoker ? "smoker_" : "nonsmoker_")
+        .append("soa");
+
+    StringBuilder sb = new StringBuilder("Rscript")
+        .append(" --slave ").append(scriptFile)
+        .append(" --age ").append(age)
+        .append(" --term ").append(term)
+        .append(" --face ").append(coverage)
+        .append(" --distribution ").append(distribution)
+        .append(" --working_directory ").append(folder)
+        .append(" --environment ").append(envFile);
 
     Log.debug(sb.toString());
 
@@ -52,7 +92,7 @@ public class RService {
   }
 
   public static void main(String[] args) throws Exception {
-    double price = new RService().query(23, 10, 100000, false, false);
+    double price = new RService().query(23, 10, 1000000, false, false, 1.20);
     Log.debug("$%.2f / month", price);
   }
 

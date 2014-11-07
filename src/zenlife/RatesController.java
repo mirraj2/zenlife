@@ -13,12 +13,13 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
-public class EnrollController {
+public class RatesController {
 
   private final RService rService = new RService();
   private final Map<String, double[]> ratesTable = Maps.newHashMap();
+  private final RiskRatios ratios = new RiskRatios();
 
-  public EnrollController() {
+  public RatesController() {
     initRatesTable();
   }
 
@@ -42,7 +43,7 @@ public class EnrollController {
 
     checkState(starterRate != -1, "Could not find coverage amount: " + selectedProtection);
 
-    double rate = rService.query(age, 10, selectedProtection, male, smoker);
+    double rate = rService.query(age, 10, selectedProtection, male, smoker, ratios.compute(json, male, age));
 
     Json ret = Json.object();
     ret.with("benchmark_rate", starterRate)
@@ -75,7 +76,7 @@ public class EnrollController {
 
   private void initRatesTable() {
     CSVReader reader = new CSVReader(new InputStreamReader(
-        EnrollController.class.getResourceAsStream("data/rates-table.csv")));
+        RatesController.class.getResourceAsStream("data/rates-table.csv")));
 
     try {
       reader.readNext();

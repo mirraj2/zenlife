@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class ZenlifeServer implements Container {
 
-  private final EnrollController enrollController = new EnrollController();
+  private final RatesController enrollController = new RatesController();
   private final Sentinel sentinel = new Sentinel();
 
   @Override

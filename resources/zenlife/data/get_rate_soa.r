@@ -19,7 +19,7 @@ option_list <- list(
 	make_option(c("--distribution","-d"), type="character", default="NA", help="a valid distribution of deaths"),
 	make_option(c("--working_directory","-wd"), type="character", default="C://zenlife/", help="the working directory where the env is saved"),
 	make_option(c("--source","-s"), type="character", default="life_eqns.r", help="the equations used in the calculation"),
-	make_option(c("--environment","-e"), type="character", default="20141031105048.zenenv", help="the environment where the distributions have been saved")
+	make_option(c("--environment","-e"), type="character", default="20141031151620.zenenv", help="the environment where the distributions have been saved")
 )
 opt <- parse_args(OptionParser(option_list = option_list))
 
@@ -51,7 +51,8 @@ if (!exists(opt$distribution))
 	quit(status=-1)
 }
 
-dist1=eval(parse(text=opt$distribution))
-yearly_rate=hist_death_integral_ss(dist1, face=opt$face, age=opt$age, term=opt$term, grow_int=wacc, cost_int=wacc, policy_start_cost=customer_aquisition, policy_claim_cost=claim_cost, gross_margin=margin_pct, maint=customer_maint)
+distname=eval(parse(text=opt$distribution))
+dist2=query_soa(distname, age=opt$age)
+yearly_rate=hist_death_integral_ss(dist2, face=opt$face, age=opt$age, term=opt$term, grow_int=wacc, cost_int=wacc, policy_start_cost=customer_aquisition, policy_claim_cost=claim_cost, gross_margin=margin_pct, maint=customer_maint)
 yearly_rate
 quit()
