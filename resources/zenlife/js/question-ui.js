@@ -46,8 +46,8 @@ function addComboBox(panel, question, choices, header) {
 		select.append(option);
 	}
 	panel.append(select);
-	
-	select.change(function(){
+
+	select.change(function() {
 		changeAnswer(question.id, 0);
 	});
 }
@@ -193,7 +193,8 @@ function isCompleted(questionPanel) {
 }
 
 function changeAnswer(questionId, answer) {
-	console.log("Changing question " + questionId + "'s answer to: " + answer);
+	var previousAnswer = savedAnswers[questionId];
+	// console.log("Changing question " + questionId + "'s answer to: " + answer);
 	savedAnswers[questionId] = answer;
 	// console.log(JSON.stringify(savedAnswers));
 	$.cookie("questions", JSON.stringify(savedAnswers), {
@@ -202,6 +203,8 @@ function changeAnswer(questionId, answer) {
 
 	syncChildren(questionId, answer);
 	syncNextButton();
+
+	onAnswerChanged(questionId, answer, previousAnswer);
 }
 
 function syncChildren(questionId) {

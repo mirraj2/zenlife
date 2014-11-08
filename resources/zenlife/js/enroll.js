@@ -25,6 +25,10 @@ function loadSavedAnswers() {
 }
 
 function nextSection() {
+	if (onNextSection) {
+		onNextSection();
+	}
+
 	if (++sectionIndex == sections.length) {
 		window.location.href = "/purchase";
 	}
@@ -58,6 +62,8 @@ function nextSection() {
 		nextSection();
 	});
 	$("#back-button").toggleClass("disabled", sectionIndex == 0);
+
+	window.scrollTo(0, 0);
 }
 
 function syncNextButton() {

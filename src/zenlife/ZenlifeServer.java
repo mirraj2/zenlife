@@ -25,6 +25,11 @@ public class ZenlifeServer implements Container {
 
   private final RatesController enrollController = new RatesController();
   private final Sentinel sentinel = new Sentinel();
+  private final String domain;
+
+  public ZenlifeServer() {
+    domain = Config.load("zenlife").get("domain", "zenlife.us");
+  }
 
   @Override
   public void handle(Request req, Response resp) {
@@ -57,7 +62,11 @@ public class ZenlifeServer implements Container {
   }
 
   private void serve(String s, Response resp) {
-    serve(s, resp, ImmutableMap.<String, String> of());
+    Map<String, String> vars = ImmutableMap.of();
+    if (s.endsWith("/s.js")) {
+      vars = ImmutableMap.of("$DOMAIN", domain, "$PORT", sentinel.getPort() + "");
+    }
+    serve(s, resp, vars);
   }
 
   private void serve(String s, Response resp, Map<String, String> variables) {
@@ -74,7 +83,7 @@ public class ZenlifeServer implements Container {
         s = "html/" + s;
       }
 
-      if (s.endsWith(".html")) {
+      if (s.endsWith(".html") || s.endsWith("/s.js")) {
         String data = IO.from(getClass(), s).toString();
         for (Entry<String, String> variable : variables.entrySet()) {
           data = data.replace(variable.getKey(), variable.getValue());

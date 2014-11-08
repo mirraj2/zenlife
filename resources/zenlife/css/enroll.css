@@ -1,5 +1,6 @@
 body {
 	margin-bottom: 50px;
+	background-image: url("/img/dark_fish_skin.png");
 }
 
 .children {
@@ -18,14 +19,16 @@ body {
 }
 
 #question-container {
-	margin-top: 30px;
+	margin-top: 90px;
 	width: 600px;
 	color: #444444;
 }
 
 #questions-panel {
 	margin-top: 0px;
-	margin: 0 auto;
+	margin:0 auto;
+	padding: 40px;
+	background-color: white;
 }
 
 #questions-panel h1 {

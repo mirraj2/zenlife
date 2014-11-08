@@ -1,5 +1,7 @@
 package zenlife.sentinel;
 
+import jasonlib.Config;
+import jasonlib.Log;
 import java.util.Map;
 import java.util.Set;
 import org.simpleframework.http.Cookie;
@@ -16,6 +18,18 @@ public class Sentinel {
   private final SessionDB sessionDB = new SessionDB();
 
   private final Map<String, DataFile> map = Maps.newConcurrentMap();
+
+  private final int port;
+
+  public Sentinel() {
+    port = Config.load("zenlife").getInt("websocket-port", 8081);
+    new SentinelServer(port, this).start();
+    Log.info("Websocket server started on port " + port);
+  }
+
+  public int getPort() {
+    return port;
+  }
 
   public void handle(Request req, Response resp) {
     try {
@@ -62,7 +76,7 @@ public class Sentinel {
     return sessionId;
   }
 
-  private DataFile getFile(String token) {
+  public DataFile getFile(String token) {
     DataFile ret = map.get(token);
     if (ret == null) {
       synchronized (map) {

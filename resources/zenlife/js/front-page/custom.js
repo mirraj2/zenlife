@@ -8,7 +8,6 @@ $(window).load(function(){
 
 $(document).ready(function() {
   fullScreenContainer();
-  owlCarousel();
   magnificPopup();
 });
 
@@ -60,39 +59,11 @@ function fullScreenContainer() {
 }
 
 
-
-/* --- owlCarousel ------------- */
-
-function owlCarousel() {
-    $("#owl-example").owlCarousel({
-      lazyLoad : true,
-      items: 3,
-      theme: "owl-theme-main"
-    }); 
-  
-    $("#intro").owlCarousel({
-      lazyLoad: true,
-      lazyEffect: "fade",
-      singleItem: true,
-      navigation: true,
-      navigationText : ['<i class="fa fa-angle-left"></i>','<i class="fa fa-angle-right"></i>'],
-      slideSpeed : 450,
-      pagination: false,
-      transitionStyle: "fade",
-      theme: "owl-theme-featured"
-      
-    }); 
-}
-
-
-
 /* --- Tooltips ------------------- */
 
 function tooltips() {
   $('.tooltips').tooltip(); 
 }
-
-
 
 
 /* --- Show/Hide Contact Form ------------------- */
@@ -103,8 +74,6 @@ function toggleContactForm() {
     $('.contact-form').slideToggle(300);
   });
 }
-
-
 
 
 /* --- scrollReveal ------------------- */

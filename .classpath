@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/opencsv-2.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JasonLib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EZDB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/JavaWebsockets"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
