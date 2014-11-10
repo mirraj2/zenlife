@@ -11,10 +11,19 @@ var loadingImage = $("#ajax-loader")
 $.getJSON("/data/questions.json", function(data) {
 	savedAnswers = loadSavedAnswers();
 	sections = data;
+	var breadcrumbs = $(".breadcrumbz");
 	for (var i = 0; i < sections.length; i++) {
-		var questions = sections[i].questions;
-		index(questions);
+		index(sections[i].questions);
+		breadcrumbs.append($("<a href='javascript: void(0)'>").text(sections[i].title));
 	}
+
+	$(".breadcrumbz a").click(function() {
+		var section = $(this).index();
+		if (section < sectionIndex) {
+			sectionIndex = section - 1;
+			nextSection();
+		}
+	});
 
 	nextSection();
 });
@@ -34,9 +43,12 @@ function nextSection() {
 	}
 
 	section = sections[sectionIndex];
+	var crumbs = $(".breadcrumbz a");
+	crumbs.removeClass("active");
+	$(crumbs[sectionIndex]).addClass("active");
 
 	content.empty();
-	content.append($("<h1>").text(section.title));
+	// content.append($("<h1>").text(section.title));
 
 	var questions = section.questions;
 	for (var i = 0; i < questions.length; i++) {
