@@ -1,4 +1,4 @@
-# Rscript --slave get_rate_ss.r --age 20 --term 10 --face 100000 --distribution male_nonsmoker
+# Rscript --slave get_rate_soa.r --age 20 --term 10 --face 100000 --distribution alb_100_male_nonsmoker_soa
 
 #given the cost assumptions below, age, term, face amount, and the distribution of interest, returns yearly rate for insurance
 
