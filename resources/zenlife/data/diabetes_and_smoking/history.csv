@@ -1,3 +1,5 @@
-family_history_diabetes,diabetes_RR
-yes,1.15171876
-no,0.93982
+# parents and siblings with diabetes,diabetes_RR
+0,0.491959177
+1,1.50047549
+2,2.528670171
+3+,7.295754598
