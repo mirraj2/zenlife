@@ -19,16 +19,18 @@ body {
 }
 
 #question-container {
-	margin-top: 90px;
+	margin-top: 20px;
 	width: 600px;
 	color: #444444;
 }
 
 #questions-panel {
 	margin-top: 0px;
-	margin:0 auto;
-	padding: 40px;
+	margin: 0 auto;
+	padding: 20px 40px 40px 40px;
 	background-color: white;
+	border-radius: 22px;
+	border: 1px solid gray;
 }
 
 #questions-panel h1 {
@@ -66,7 +68,7 @@ body {
 	margin-top: 5px;
 }
 
-ul {
+.question ul {
 	list-style: none;
 	padding-left: 0px;
 }

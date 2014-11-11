@@ -20,6 +20,7 @@
             <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/EZDB/lib/slf4j-simple-1.7.2.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/EZDB/lib/guava-17.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jason/workspace/EZDB/lib/mysql-connector-java-5.1.32-bin.jar"/>
+            <fileset dir="/Users/jason/workspace/JavaWebsockets/bin"/>
         </jar>
     </target>
 </project>

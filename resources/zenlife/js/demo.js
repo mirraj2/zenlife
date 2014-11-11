@@ -175,6 +175,8 @@ function disableDemo() {
 	$.removeCookie("demo");
 	$("#mag-glass").remove();
 	$("#canvas").remove();
-	coords.remove();
-	coords = null;
+	if (coords) {
+		coords.remove();
+		coords = null;
+	}
 }
